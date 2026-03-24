@@ -211,12 +211,29 @@
         func adsLoader(_: IMAAdsLoader, failedWith adErrorData: IMAAdLoadingErrorData) {
             guard let _video else { return }
 
+            let message = adErrorData.adError.message ?? "Error loading ads"
+            let code = adErrorData.adError.code
+            let type = adErrorData.adError.type
+
             if adErrorData.adError.message != nil {
                 print("Error loading ads: " + adErrorData.adError.message!)
             }
 
+            if _video.onReceiveAdEvent != nil {
+                _video.onReceiveAdEvent?([
+                    "event": "ERROR",
+                    "data": [
+                    "message": message,
+                    "code": code,
+                    "type": type,
+                ],
+                    "target": _video.reactTag!,
+                ])
+            }
+
             // CSAI
             if adsManager != nil {
+                _video.setAdPlaying(false)
                 _video.setPaused(false)
             }
 
